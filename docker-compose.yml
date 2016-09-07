@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+    restapi:
+        build: ./restapi
+        image: furikake/graphql-demo-rest:latest
+        hostname: restapi
+        ports:
+            - "8000:8000"
+        networks:
+            gateway:
+                aliases:
+                    - restapi
+        volumes:
+            - /tmp/demodb:/restapi/db
+    graphqljs:
+        build: ./graphqljs
+        image: furikake/graphql-demo-graphql:latest
+        hostname: graphqljs
+        ports:
+            - "5000:5000"
+        networks:
+            gateway:
+                aliases:
+                    - graphqljs
+        links:
+            - restapi
+
+networks:
+    gateway:
