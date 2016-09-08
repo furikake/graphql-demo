@@ -45,7 +45,7 @@ query{
     }
     serviceQualification{
       serviceClassDesc
-      expectedDataOfRfs
+      expectedDateOfRfs
     }
   }
 }
