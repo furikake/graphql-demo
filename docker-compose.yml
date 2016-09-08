@@ -3,6 +3,8 @@ version: '2'
 services:
     restapi:
         build: ./restapi
+        environment:
+            APP_PATH: /restapi
         image: furikake/graphql-demo-rest:latest
         hostname: restapi
         ports:
@@ -15,6 +17,8 @@ services:
             - /tmp/demodb:/restapi/db
     graphqljs:
         build: ./graphqljs
+        environment:
+            APP_PATH: /app
         image: furikake/graphql-demo-graphql:latest
         hostname: graphqljs
         ports:

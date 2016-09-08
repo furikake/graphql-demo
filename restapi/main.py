@@ -55,6 +55,7 @@ def generate_test_data():
     """loads test data for the demo into the database"""
 
     no_records = 20000
+    batch_size = 10000
     db = get_db()
 
     sql_address = """INSERT INTO address (location_id, 
@@ -64,41 +65,67 @@ def generate_test_data():
         state_territory_code, full_address) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+    rec_no = 0
+
     for record in testdata.generate_test_address_data(no_records):
+        rec_no = rec_no + 1
         c = db.execute(sql_address, (record["location_id"], 
             record["rollout_region_id"], record["distribution_area_id"], 
             record["road_number"], record["road_name"], 
             record["road_type_code"], record["locality_name"], 
             record["state_territory_code"], record["full_address"]))
+        if rec_no % batch_size == 0:
+            db.commit()
+            print('writing address: {}'.format(rec_no))
 
     sql_service_qual = """INSERT INTO service_qualification (location_id, 
         service_class, service_class_desc, 
         service_class_reason, service_type, 
         expected_date_of_rfs) VALUES (?, ?, ?, ?, ?, ?)"""
 
+    rec_no = 0
+
     for record in testdata.generate_test_sevice_qual_data(no_records):
+        rec_no = rec_no + 1
         c = db.execute(sql_service_qual, (record["location_id"], 
             record["service_class"], record["service_class_desc"], 
             record["service_class_reason"], record["service_type"], 
             record["rfs_date"]))
+        if rec_no % batch_size == 0:
+            db.commit()
+            print('writing service qual: {}'.format(rec_no))
 
     sql_medical_alarm = """INSERT INTO medical_alarm (location_id, 
         description, contact_crm_id) VALUES (?, ?, ?)"""
 
+    rec_no = 0
+
     for record in testdata.generate_test_medical_alarm_data(no_records):
+        rec_no = rec_no + 1
         c = db.execute(sql_medical_alarm, (record["location_id"],
             record["description"], record["contact_crm_id"]))
+        if rec_no % batch_size == 0:
+            db.commit()
+            print('writing medical alarm: {}'.format(rec_no))
 
     sql_contact = """INSERT INTO contact (crm_id,
         name, email,
         phone) VALUES (?, ?, ?, ?)"""
 
+    rec_no = 0
+
     for record in testdata.generate_test_contact(no_records):
+        rec_no = rec_no + 1
         c = db.execute(sql_contact, (record["crm_id"],
             record["name"], record["email"],
             record["phone"]))
+        if rec_no % batch_size == 0:
+            db.commit()
+            print('writing contact: {}'.format(rec_no))
 
+    print('finished generating data -> committing') 
     db.commit()
+    print('committed')
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format='%(asctime)s [%(levelname)s] %(message)s')
 
@@ -133,6 +160,25 @@ def get_address(location_id):
             "state_territory_code": row["state_territory_code"],
             "full_address": row["full_address"] }
         return json.dumps(resp), 200
+
+@app.route("/addresses")
+@produces("application/json")
+def get_addresses():
+    
+    logging.info("GET /addresses")
+    logging.info(str(dir(request)))
+
+    logging.info("start=" + request.args.get('start'))
+
+    limit = request.args.get('limit')
+    if not limit.isdigit():
+        return "limit must be a number", 400
+
+    db = get_db()
+
+    c = db.execute("SELECT location_id, rollout_region_id, distribution_area_id, road_number, road_name, road_type_code, locality_name, state_territory_code, full_address FROM address WHERE location_id = ? ORDER BY location_id LIMIT ?", (location_id, limit))
+
+    return "", 200
 
 """
 Get the service-qualifications

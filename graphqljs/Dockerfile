@@ -5,9 +5,15 @@ RUN apk add --update \
         su-exec \
     && rm /var/cache/apk/*
 
-COPY *.json *.js .babelrc run-in-docker.sh /app/
-COPY src/ /app/src/
+ENV APP_DIR /app
+
+WORKDIR ${APP_DIR}
+
+COPY *.json *.js run-in-docker.sh ./
+COPY src/ ./src/
+
+RUN npm install
 
 EXPOSE 5000
 
-CMD ["/app/run-in-docker.sh"]
+CMD ["./run-in-docker.sh"]

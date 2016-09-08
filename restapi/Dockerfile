@@ -7,12 +7,17 @@ RUN apk add --update \
     && pip3 install --upgrade pip \
     && rm /var/cache/apk/*
 
-COPY requirements.txt *.py schema.sql run-in-docker.sh /restapi/
+ENV APP_PATH /restapi
+
+WORKDIR ${APP_PATH}
+
+COPY requirements.txt *.py schema.sql run-in-docker.sh ./
+
+RUN pip3 install -r requirements.txt
 
 # sqlite DB mount point
-VOLUME ["/restapi/db"]
+VOLUME ["${APP_PATH}/db"]
 
-# a bit hacky but the run.sh command defaults to 0.0.0.0:8000
 EXPOSE 8000
 
-CMD ["/restapi/run-in-docker.sh"]
+CMD ["./run-in-docker.sh"]

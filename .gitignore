@@ -1,3 +1,4 @@
 graphqljs/node_modules
 restapi/flaskvenv
 restapi/__pycache__
+demo.db

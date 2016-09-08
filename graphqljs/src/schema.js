@@ -86,7 +86,7 @@ const ServiceQualificationType = new GraphQLObjectType({
       description: 'Service Type',
       resolve: location => location.service_type,
     },
-    expectedDataOfRfs: {
+    expectedDateOfRfs: {
       type: GraphQLString,
       description: 'Expected Date of Ready for Service',
       resolve: location => location.expected_date_of_rfs,
@@ -122,9 +122,6 @@ const MedicalAlarmType = new GraphQLObjectType({
     contact: {
       type: ContactType,
       resolve: (obj, args, {loaders}) => {
-        // console.log('query: contact; obj=' + Object.keys(obj));
-        // console.log('query: contact; args=' + Object.keys(args));
-        // console.log('query: contact; loaders=' + Object.keys(loaders.location)); 
         return loaders.contact.load(obj.contact_crm_id);
       }
     },
@@ -192,9 +189,6 @@ const LocationType = new GraphQLObjectType({
       type: new GraphQLList(MedicalAlarmType),
       description: 'Medical alarms for the location',
       resolve: (obj, args, {loaders}) => {
-        // console.log('query: medicalAlarms; obj=' + Object.keys(obj));
-        // console.log('query: medicalAlarms; args=' + Object.keys(args));
-        // console.log('query: medicalAlarms; loaders=' + Object.keys(loaders.location));
         return loaders.medicalAlarm.load(obj.location_id);
       }
     },
@@ -202,9 +196,6 @@ const LocationType = new GraphQLObjectType({
       type: ServiceQualificationType,
       description: 'Service Qualification for the location',
       resolve: (obj, args, {loaders}) => {
-        // console.log('query: serviceQual; obj=' + Object.keys(obj));
-        // console.log('query: serviceQual; args=' + Object.keys(args));
-        // console.log('query: serviceQual; loaders=' + Object.keys(loaders.location));
         return loaders.serviceQual.load(obj.location_id);
       }
     },
@@ -221,12 +212,12 @@ const QueryType = new GraphQLObjectType({
   name: 'Query',
   description: 'Query for location related data',
   fields: () => ({
-    allLocations: {
-      type: new GraphQLList(LocationType),
-      description: 'All known locations',
-      resolve: (root, args, {loaders}) => loaders.location.loadAll(),
-    },
-    node: nodeField,
+    // allLocations: {
+    //   type: new GraphQLList(LocationType),
+    //   description: 'All known locations',
+    //   resolve: (root, args, {loaders}) => loaders.location.loadAll(),
+    // },
+    // node: nodeField,
     location: {
       type: LocationType,
       args: {

@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-APP_PATH=/restapi
-
-pip3 install -r "$APP_PATH"/requirements.txt
 export FLASK_APP="$APP_PATH"/main.py
 
 # check if DB exists first
