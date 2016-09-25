@@ -30,7 +30,9 @@ Demo will prime the necessary test data and the graph looks a little like this.
                              +----------------------+
 ```
 
-## Example Query
+## Example Queries
+
+### Simple hardcoded query
 
 ```
 query{
@@ -46,6 +48,70 @@ query{
     serviceQualification{
       serviceClassDesc
       expectedDateOfRfs
+    }
+  }
+}
+```
+
+### Parameterised query
+
+```
+query($locationId:ID!){
+  location(locationId:$locationId){
+    fullAddress
+    medicalAlarms{
+      description
+      contact{
+        name
+        email
+      }
+    }
+    serviceQualification{
+      serviceClassDesc
+      expectedDateOfRfs
+    }
+  }
+}
+```
+
+Variables
+
+```
+{
+  "locationId": "LOC000000000001"
+}
+```
+
+### curl
+
+```
+curl 'http://localhost:5000/graphql?' \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json' \
+  --data-binary '{"query":"query($locationId:ID!){location(locationId:$locationId){\nfullAddress\n}}","variables":"{\"locationId\":\"LOC000000000001\"}"}'
+```
+
+### Introspection Query
+
+```
+{
+  __schema{
+    types{
+      name
+      fields(includeDeprecated:true){
+        name
+        description
+        args {
+          name
+          description
+          defaultValue
+        }
+        type {
+          kind
+          name
+          description
+        }
+      }
     }
   }
 }
